@@ -3,7 +3,7 @@
 SDISK II LCD Firmware 
 
 2010.11.11 by Koichi Nishida
-2012.01.26 by Fábio Belavenuto
+2012.01.26 by Fï¿½bio Belavenuto
 2015.07.02 by Alexandre Suaide
 
 -------------------------------------
@@ -17,7 +17,7 @@ FAT16 and FAT32 disks should have at least 64 blocks per cluster
 */
 
 /*
-2012.01.26 by Fábio Belavenuto
+2012.01.26 by Fï¿½bio Belavenuto
 Added support for image exchange using a button added in the Brazilian version by Victor Trucco
 Added support for a 16x2 LCD
 */
@@ -49,8 +49,8 @@ I recommend you to replace it with 27 MHz,
 or ask Nishida Radio.
 if you don't want to replace it, change the following to
 */
-.equ CRYSTAL, 25
-//.equ CRYSTAL, 27
+//.equ CRYSTAL, 25
+.equ CRYSTAL, 27
 
 .equ PINB, 0x03
 .equ DDRB, 0x04

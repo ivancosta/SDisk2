@@ -1,0 +1,69 @@
+SDISK2 
+
+SDCard drive emulator for the Apple II
+
+Fiz algumas modificações no projeto original
+
+- coloquei headers para programar o chip Atmega da SDiskII diretamente na placa 
+usando um Arduino. Claro, você também pode retirar o chip da placa e programar com um gravador 
+de eprom.
+- fiz um makefile que pode compilar o código para as versões com display OLED, Nokia e LCD. A beleza
+do projeto é que você pode usar o que lhe estiver disponível. O makefile também faz o upload do .hex 
+para o chip
+- arrumei erros de compilação
+- otimizei uma ou outra coisa no código em C - veja abaixo
+- flag -O1 do avr-gcc para otimizar para velocidade, não em tamanho (-O2, que otimiza mais
+ainda o código, nos compiladores que testei
+- adicionei um botão reset, caso o SDiskII trave não é necessário reiniciar o Apple II
+- adicionei um led de atividade
+
+Pinos para programar o Atmega328p na placa, usando Arduino Uno como ISP
+
+pino       pino
+Arduino   Atmega
+=======	  ======        
+13   <-> 19
+12   <-> 18
+11   <-> 17
+10   <-> 1 = reset
+5V   <-> 5V
+Gnd  <-> Gnd
+
+
+
+Erro do compilador
+==================
+
+Testei com avr-toolchain, Microchip Studio 7, ambos dão erro do compilador com a flag -O2:
+
+avr-gcc -o build/main.o src/main.c -Wall -O2 -Wno-deprecated-declarations -Wno-strict-aliasing -D__PROG_TYPES_COMPAT__ -D_SDISK_OLED_ -fpack-struct -fshort-enums -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega328p -DF_CPU=27000000UL -MMD -MP -Isrc -c
+during RTL pass: bbro
+src/main.c: In function 'verify_status':
+src/main.c:638:1: internal compiler error: in simplify_subreg, at simplify-rtx.cc:7549
+  638 | }
+      | ^
+Please submit a full bug report, with preprocessed source (by using -freport-bug).
+See <https://gcc.gnu.org/bugs/> for instructions.
+make: *** [Makefile:50: build/main.o] Error 1
+
+
+
+Otimizações
+===========
+Aqui, sempre são feitas 8 comparações e haverá problemas caso o número de buffers
+seja diminuido ou aumentado
+
+if (((sectors[0]==sector)&&(tracks[0]==trk)) || ((sectors[1]==sector)&&(tracks[1]==trk)) ||
+((sectors[2]==sector)&&(tracks[2]==trk)) || ((sectors[3]==sector)&&(tracks[3]==trk)) ||
+((sectors[4]==sector)&&(tracks[4]==trk))
+) writeBackSub();
+
+
+Com a modificação abaixo, no melhor caso são feitas apenas 2 comparações e sem risco de erro de execuçao
+
+for (int i = 0; i < BUF_NUM; i++) {
+	if (sectors[i] == sector && tracks[i] == trk) {
+		writeBackSub();
+		break; //do once
+	}
+}

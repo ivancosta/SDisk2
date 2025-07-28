@@ -39,44 +39,52 @@ void ssd1306_contrast(unsigned char value)
     ssd1306_contr = value;
 }
 
-void ssd1306_init()
+
+void ssd1306_init() // ****************************
 {
-    i2c_init();
-    ssd1306_command(SSD1306_DISPLAYOFF);                    // 0xAE  
-	ssd1306_command(SSD1306_NORMALDISPLAY); 
-    ssd1306_command(SSD1306_SETDISPLAYCLOCKDIV);            // 0xD5
-    ssd1306_command(0x80);                                  // the suggested ratio 0x80   
-    ssd1306_command(SSD1306_SETMULTIPLEX);                  // 0xA8    
-	ssd1306_command(0x3F); 
-    ssd1306_command(SSD1306_SETDISPLAYOFFSET);              // 0xD3
-    ssd1306_command(0x0);                                   // no offset  
-    ssd1306_command(SSD1306_SETSTARTLINE | 0x0);            // line #0   
-    ssd1306_command(SSD1306_CHARGEPUMP);                    // 0x8D
-    ssd1306_command(0x14);                                  // using internal VCC 
-    ssd1306_command(SSD1306_MEMORYMODE);                    // 0x20
-    ssd1306_command(0x00);                                  // 0x00 horizontal addressing  
-    ssd1306_command(SSD1306_SEGREMAP);                     // rotate screen 180 
-    ssd1306_command(SSD1306_COMSCANDEC);                    // rotate screen 180  
-	
-    ssd1306_command(SSD1306_SETCOMPINS);                    // 0xDA
-    ssd1306_command(0x12);  
-    ssd1306_command(SSD1306_SETCONTRAST);                   // 0x81
-    ssd1306_command(0xCF);  
-    ssd1306_command(SSD1306_SETPRECHARGE);                  // 0xd9
-    ssd1306_command(0xF1);  
-    ssd1306_command(SSD1306_SETVCOMDETECT);                 // 0xDB
-    ssd1306_command(0x40);  
-    ssd1306_command(SSD1306_DISPLAYALLON_RESUME);           // 0xA4  
-    ssd1306_command(SSD1306_NORMALDISPLAY);                 // 0xA6
-    ssd1306_command(SSD1306_DISPLAYON);                     //switch on OLED
-    ssd1306_contr = 0xCF;
-	lcd_contrast = ssd1306_contr;
-	lcd_offset = 2;
-    ssd1306_inv = 0;
-    ssd1306_under = 0;
-    ssd1306_over = 0;
+  _delay_ms(500); // wait for power to stabilize before initializing the LCD
+  i2c_init();
+  ssd1306_command(SSD1306_DISPLAYOFF);                    // 0xAE  
+  ssd1306_command(SSD1306_SETDISPLAYCLOCKDIV);            // 0xD5
+  ssd1306_command(0x80);                                  // the suggested ratio 0x80   
+  ssd1306_command(SSD1306_SETMULTIPLEX);                  // 0xA8    
+  ssd1306_command(0x3F);                                  // 63 = height - 1
+
+  ssd1306_command(SSD1306_SETDISPLAYOFFSET);              // 0xD3
+  ssd1306_command(0x0);                                   // no offset  
+  ssd1306_command(SSD1306_SETSTARTLINE | 0x0);            // line #0   
+  ssd1306_command(SSD1306_CHARGEPUMP);                    // 0x8D
+
+  ssd1306_command(0x14);                                  // using internal VCC 
+  ssd1306_command(SSD1306_MEMORYMODE);                    // 0x20
+  ssd1306_command(0x00);                                  // 0x00 horizontal addressing  
+  ssd1306_command(SSD1306_SEGREMAP);                     // rotate screen 180 
+  ssd1306_command(SSD1306_COMSCANDEC);                    // rotate screen 180  
+
+  ssd1306_command(SSD1306_SETCOMPINS);                    // 0xDA
+  ssd1306_command(0x12);  
+  ssd1306_command(SSD1306_SETCONTRAST);                   // 0x81
+  ssd1306_command(0xCF);  
+
+  ssd1306_command(SSD1306_SETPRECHARGE);                  // 0xd9
+  ssd1306_command(0xF1);  
+
+  ssd1306_command(SSD1306_SETVCOMDETECT);                 // 0xDB
+  ssd1306_command(0x40);  
+  ssd1306_command(SSD1306_DISPLAYALLON_RESUME);           // 0xA4  
+  ssd1306_command(SSD1306_NORMALDISPLAY);                 // 0xA6
+  ssd1306_command(SSD1306_DEACTIVATE_SCROLL);
+  ssd1306_command(SSD1306_DISPLAYON);                     //switch on OLED
+  
+  ssd1306_contr = 0xCF;
+  lcd_contrast = ssd1306_contr;
+  lcd_offset = 2;
+  ssd1306_inv = 0;
+  ssd1306_under = 0;
+  ssd1306_over = 0;
 	ssd1306_screenDown();
 }
+
 void ssd1306_clear()
 {
   for(int line = 0 ; line<8; line++)

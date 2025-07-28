@@ -48,7 +48,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
 #define VER "5.5"
-#define YEAR "(2020)"
+#define YEAR "(2025)"
 
 // these are done during compilation
 //#define _LCD_
@@ -70,7 +70,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	#include "lcd_nokia.h"
 #endif
 
-#ifdef _OLED_
+#ifdef _SDISK_OLED_
     #include "oled.h"
 #endif
 
@@ -122,7 +122,7 @@ void            set_speed();
 void            configButtons();
 int             main(void);
 
-#if defined(_LCD_NOKIA_) || defined(_OLED_)
+#if defined(_LCD_NOKIA_) || defined(_SDISK_OLED_)
 void            set_contrast();
 void            setup();
 void            icons(unsigned char i1, unsigned char i2, unsigned char i3);

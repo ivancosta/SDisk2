@@ -50,12 +50,13 @@
 #define SSD1306_CHARGEPUMP 0x8D
 #define SSD1306_EXTERNALVCC 0x1
 #define SSD1306_SWITCHCAPVCC 0x2
+#define SSD1306_DEACTIVATE_SCROLL 0x2E
 
 #define MIN_CONTRAST 0
 #define MAX_CONTRAST 255
 
-unsigned char lcd_contrast;
-unsigned char lcd_offset;
+extern unsigned char lcd_contrast;
+extern unsigned char lcd_offset;
 
 void ssd1306_command(int c);
 void ssd1306_data(unsigned char c);

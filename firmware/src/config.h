@@ -3,7 +3,7 @@
 SDISK II LCD Firmware
 
 2010.11.11 by Koichi Nishida
-2012.01.26 by Fábio Belavenuto
+2012.01.26 by Fï¿½bio Belavenuto
 2015.07.02 by Alexandre Suaide
 
 -------------------------------------
@@ -17,7 +17,7 @@ FAT16 and FAT32 disks should have at least 64 blocks per cluster
 */
 
 /*
-2012.01.26 by Fábio Belavenuto
+2012.01.26 by Fï¿½bio Belavenuto
 Added support for image exchange using a button added in the Brazilian version by Victor Trucco
 Added support for a 16x2 LCD
 */
@@ -49,15 +49,16 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #define set_bit(a,z) (a |= _BV(z))
 #define LCD_FLIP_ADD 0
 
+
 /*
 This is the original SDISK II version from Nishida that was updated
 to receive a 16x2 LCD from Victor Trucco and Fabio Belavenuto
 
 DO NOT CHANGE THIS unless you really know what you are doing
 */
-#ifdef _SDISK_ORIGINAL_
+#ifdef _LCD_
 
-	#define _LCD_
+	//#define _LCD_
 
 	// LCD pins
 	#define LCD_PORT PORTC
@@ -114,9 +115,9 @@ by the Nokia LCD
 
 DO NOT CHANGE THIS unless you really know what you are doing
 */
-#ifdef _SDISK_ORIGINAL_MOD_NOKIA_
+#ifdef _LCD_NOKIA_
 
-	#define _LCD_NOKIA_
+	//#define _LCD_NOKIA_
 
 	// LCD pins
 	#define LCD_PORT         PORTC
@@ -206,7 +207,7 @@ DO NOT CHANGE THIS unless you really know what you are doing
 	// SD LED
 	#define SD_LED_PORT PORTB
 	#define SD_LED_PORTD DDRB
-	#define SD_LED 5
+	#define SD_LED 4
 
 	// BOTOES
 	#define ENTER_PORT       PIND
@@ -217,7 +218,7 @@ DO NOT CHANGE THIS unless you really know what you are doing
 	#define UP_PORTD         PORTB
 	#define ENTER_BIT        DDD6
 	#define DOWN_BIT         DDD7
-	#define UP_BIT           DDB4
+	#define UP_BIT           DDB5
 
 	// PINOS PARA A DISK II - APPLE
 	#define DISKII_PIN       PINC

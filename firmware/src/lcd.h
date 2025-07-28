@@ -1,7 +1,7 @@
 /*------------------------------------
 SDISK II LCD Firmware
 2010.11.11 by Koichi Nishida
-2012.01.26 by Fábio Belavenuto
+2012.01.26 by Fï¿½bio Belavenuto
 2015.07.02 by Alexandre Suaide
 -------------------------------------
 */
@@ -14,7 +14,7 @@ FAT16 and FAT32 disks should have at least 64 blocks per cluster
 */
 
 /*
-2012.01.26 by Fábio Belavenuto
+2012.01.26 by Fï¿½bio Belavenuto
 Added support for image exchange using a button added in the Brazilian version by Victor Trucco
 Added support for a 16x2 LCD
 */
@@ -45,7 +45,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include "string.h"
 
-unsigned char lcd_contrast;
+extern unsigned char lcd_contrast;
 
 void lcd_port(unsigned char c);
 void lcd_cmd(unsigned char c);
@@ -61,7 +61,7 @@ void lcd_put_i(unsigned int value);
 void lcd_put_l(unsigned long int value);
 void lcd_put_p(const prog_char *progmem_s);
 
-/* Definições para o LCD */
+/* Definiï¿½ï¿½es para o LCD */
 #define LCD_ENABLE  				LCD_PORT |= _BV( LCD_ENABLE_PIN )
 #define LCD_DISABLE 				LCD_PORT &=~_BV( LCD_ENABLE_PIN )
 #define LCD_INSTRUCTION				LCD_PORT &=~_BV( LCD_INSTRUCTION_PIN )

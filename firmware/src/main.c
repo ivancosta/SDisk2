@@ -150,7 +150,7 @@ PROGMEM const char SDOUT[]    = "No SD inserted";
 #define TRY 3
 #endif
 
-#ifdef _OLED_
+#ifdef _SDISK_OLED_
 /*                               012345678901234567890*/  
 PROGMEM const char SPLASH1[]  = "  SDISK ][ - BRASIL";
 PROGMEM const char VERSION[]  = "  version "VER" "YEAR;
@@ -192,9 +192,17 @@ PROGMEM const char CFG[]  = "SDISKII CFG";
 // a table for head stepper motor movement
 PROGMEM const prog_uchar stepper_table[4] = {0x0f,0xed,0x03,0x21};
 
+#if defined(_LCD_NOKIA_) || defined(_SDISK_OLED_)
+	unsigned char lcd_contrast;
+	unsigned char lcd_offset;
+#else
+	unsigned char lcd_contrast;
+#endif
+
 int main(void)
 {
 	static unsigned char oldStp = 0, stp;
+
 	init(1);
 	old_trk = 255;
 	while(1)
@@ -242,10 +250,13 @@ int main(void)
 						lcd_put_i((unsigned int)trk); 
 					}
 					
-					if (((sectors[0]==sector)&&(tracks[0]==trk)) || ((sectors[1]==sector)&&(tracks[1]==trk)) ||
-					((sectors[2]==sector)&&(tracks[2]==trk)) || ((sectors[3]==sector)&&(tracks[3]==trk)) ||
-					((sectors[4]==sector)&&(tracks[4]==trk))
-					) writeBackSub();
+					for (int i = 0; i < BUF_NUM; i++) {
+				    	if (sectors[i] == sector && tracks[i] == trk) {
+        					writeBackSub();
+        					break; //do once
+						}
+    				}
+
 					
 					// Timing is an issue here. This is the reason I copied explicitly the conversion from cluster to block
 					// instead of using getCluster() method. I also did bit shift instead of multiplications to make it faster.
@@ -280,7 +291,7 @@ void display_sd_ejected()
 	lcd_put_p(SDOUT);
 	#endif
 
-    #ifdef _OLED_
+    #ifdef _SDISK_OLED_
 	lcd_clear();
 	lcd_gotoxy(37,2);
 	lcd_put_p(ERR);
@@ -319,7 +330,7 @@ char init_sd(char splash)
 		  lcd_put_p(ERR);
 		  lcd_gotoxy(0,3);
 		#endif
-		#ifdef _OLED_
+		#ifdef _SDISK_OLED_
 		  lcd_gotoxy(37,2);
 		  lcd_put_p(ERR);
 		  lcd_gotoxy(22,4);
@@ -345,7 +356,7 @@ char init_sd(char splash)
 		#ifdef _LCD_NOKIA_
 		lcd_gotoxy(0,1);
 		#endif
-		#ifdef _OLED_
+		#ifdef _SDISK_OLED_
 		lcd_gotoxy(0,2);
 		#endif
 
@@ -370,7 +381,7 @@ char init_sd(char splash)
 		lcd_put_p(ERR);
 		lcd_gotoxy(0,3);
 		#endif
-		#ifdef _OLED_
+		#ifdef _SDISK_OLED_
 		lcd_gotoxy(37,2);
 		lcd_put_p(ERR);
 		lcd_gotoxy(22,4);
@@ -405,7 +416,7 @@ char init_sd(char splash)
 		lcd_gotoxy(0,3);
 		lcd_put_p(ERM5);
 		#endif
-		#ifdef _OLED_
+		#ifdef _SDISK_OLED_
 		lcd_gotoxy(37,2);
 		lcd_put_p(ERR);
 		lcd_gotoxy(22,4);
@@ -426,7 +437,7 @@ char init_sd(char splash)
 		//lcd_border();
 		lcd_gotoxy(9,4);
 		#endif
-		#ifdef _OLED_
+		#ifdef _SDISK_OLED_
 		lcd_gotoxy(0,4);
 		#endif
 		
@@ -496,13 +507,13 @@ void init(char splash)
 	if(flip_buttons !=0 && flip_buttons != 1)
 	{
 		flip_buttons = 0;
-		eeprom_write_byte (LCD_FLIP_ADD,0);
+		eeprom_write_byte(LCD_FLIP_ADD,1);
 	}
 		
 	if(splash)
 	{
 		lcd_init();
-		#ifdef _OLED_
+		#ifdef _SDISK_OLED_
 		  if(flip_buttons == 1) ssd1306_screenUp();
 		#endif
 		lcd_clear();
@@ -521,7 +532,7 @@ void init(char splash)
 		lcd_gotoxy(3,4);
 		lcd_put_p(VERSION);
 		#endif
-		#ifdef _OLED_
+		#ifdef _SDISK_OLED_
 		logo();		
 		lcd_gotoxy(13,6);
 		lcd_put_p(SPLASH1);
@@ -578,7 +589,7 @@ void verify_status(void)
 				#ifdef _LCD_
 					set_speed();
 				#endif
-				#if defined(_LCD_NOKIA_) || defined(_OLED_)
+				#if defined(_LCD_NOKIA_) || defined(_SDISK_OLED_)
 					setup();
 				#endif
 				if(SD_ejected()) return;
@@ -625,7 +636,7 @@ void verify_status(void)
 		sei();
 	}
 }
-#if defined(_LCD_NOKIA_) || defined(_OLED_)
+#if defined(_LCD_NOKIA_) || defined(_SDISK_OLED_)
 void set_contrast()
 {
 	unsigned char contrast = 0XAF;
@@ -687,7 +698,7 @@ void set_contrast()
 				#ifdef _LCD_NOKIA_
 					lcd_config();
 				#endif
-				#ifdef _OLED_
+				#ifdef _SDISK_OLED_
 					ssd1306_contrast(lcd_contrast);
 				#endif
 			}
@@ -705,7 +716,7 @@ void set_contrast()
 				#ifdef _LCD_NOKIA_
 					lcd_config();
 				#endif
-				#ifdef _OLED_
+				#ifdef _SDISK_OLED_
 					ssd1306_contrast(lcd_contrast);
 				#endif
 			}
@@ -720,7 +731,7 @@ void set_contrast()
 				#ifdef _LCD_NOKIA_
 					lcd_config();
 				#endif
-				#ifdef _OLED_
+				#ifdef _SDISK_OLED_
 					ssd1306_contrast(lcd_contrast);
 				#endif
 				SD_select_card();
@@ -767,7 +778,7 @@ void setup()
 	lcd_inverse();
 	lcd_gotoxy(0,3);
 	lcd_put_p(SET2);
-	#ifdef _OLED_
+	#ifdef _SDISK_OLED_
 	lcd_gotoxy(0,4);
 	lcd_put_p(SET3);
 	#endif
@@ -775,7 +786,7 @@ void setup()
 	#ifdef _LCD_NOKIA_
 	  #define MAX_SET 2
 	#endif
-	#ifdef _OLED_
+	#ifdef _SDISK_OLED_
 	  #define MAX_SET 3
 	#endif
 	
@@ -801,7 +812,7 @@ void setup()
 				lcd_put_p(SET2);
 				if(option==2) lcd_inverse();
 				
-				#ifdef _OLED_
+				#ifdef _SDISK_OLED_
 				  if(option==3) lcd_inverse();
 				  lcd_gotoxy(0,4);
 				  lcd_put_p(SET3);
@@ -828,7 +839,7 @@ void setup()
 				lcd_put_p(SET2);
 				if(option==2) lcd_inverse();
 				
-				#ifdef _OLED_
+				#ifdef _SDISK_OLED_
 				  if(option==3) lcd_inverse();
 				  lcd_gotoxy(0,4);
 				  lcd_put_p(SET3);
@@ -842,7 +853,7 @@ void setup()
 			_delay_ms(200);
 			if(option == 1) set_speed();
 			if(option == 2) set_contrast();
-			#ifdef _OLED_
+			#ifdef _SDISK_OLED_
 			  if(option==3)
 			  {
 				  if(flip_buttons == 0) 
@@ -871,14 +882,14 @@ void icons(unsigned char i1, unsigned char i2, unsigned char i3)
 	  #define IC_2 36
 	  #define IC_3 71
 	#endif
-	#ifdef _OLED_
+	#ifdef _SDISK_OLED_
 	  #define IC_LINE 7
 	  #define IC_1 0
 	  #define IC_2 58
 	  #define IC_3 115
 	#endif
 	lcd_gotoxy(IC_1,IC_LINE);
-	lcd_overline();
+	//lcd_overline();
 	lcd_put_p(EMP);
 	lcd_gotoxy(IC_1,IC_LINE);
 	lcd_icon(i1);
@@ -886,7 +897,7 @@ void icons(unsigned char i1, unsigned char i2, unsigned char i3)
 	lcd_icon(i2);
 	lcd_gotoxy(IC_3,IC_LINE);
 	lcd_icon(i3);
-	lcd_overline();
+	//lcd_overline();
 }
 #endif
 void set_speed()
@@ -912,7 +923,7 @@ void set_speed()
 		lcd_put_i(SD_speed);
 	#endif
 	
-	#ifdef _OLED_
+	#ifdef _SDISK_OLED_
 		lcd_clear();
 		lcd_gotoxy(0,0);
 		lcd_underline();
@@ -940,7 +951,7 @@ void set_speed()
 				lcd_gotoxy(0,2);
 				lcd_put_p(VALUE);
 			#endif
-			#ifdef _OLED_
+			#ifdef _SDISK_OLED_
 				lcd_gotoxy(0,3);
 				lcd_put_p(VALUE);
 			#endif
@@ -1006,7 +1017,7 @@ void select_nic()
 	char name1[8];
 	nfiles = 0;
 	buffer = &writeData[0][0];
-	files_id = &writeData[2][0];
+	files_id = (int *) &writeData[2][0]; 
 	lastBlockRead = -1;
 	buffClear();
 	
@@ -1033,7 +1044,7 @@ void select_nic()
 	  lcd_put_p(MSGC);
 	#endif
 	
-	#ifdef _OLED_
+	#ifdef _SDISK_OLED_
 	  lcd_underline();
 	  lcd_gotoxy(0,0);
 	  lcd_put_p(MSG7);
@@ -1072,7 +1083,7 @@ void select_nic()
 		  lcd_gotoxy(0,2);
 		  lcd_put_p(MSG8);
 		#endif		
-		#ifdef _OLED_
+		#ifdef _SDISK_OLED_
 		  lcd_gotoxy(0,3);
 		  lcd_put_p(MSG8);
 		#endif
@@ -1085,7 +1096,7 @@ void select_nic()
 	#ifdef _LCD_NOKIA_
 	  lcd_gotoxy(0,2);
 	#endif
-	#ifdef _OLED_
+	#ifdef _SDISK_OLED_
 	  lcd_gotoxy(0,3);
 	#endif
 	lcd_put_p(MSGD);
@@ -1168,7 +1179,7 @@ void select_nic()
 			  for(int i = 0;i<8;i++)  if(file->name[i]!=' ') lcd_char(file->name[i]);
 			  lcd_put_p(EMP);
 			#endif
-			#ifdef _OLED_
+			#ifdef _SDISK_OLED_
 			  lcd_gotoxy(0,3);
 			  if(is_a_dir(file)) lcd_icon(6); else lcd_icon(1);
 			  unsigned char count = 0;
@@ -1215,14 +1226,14 @@ void find_previous_nic()
 				{
 					SD_speed =config->sd_card_speed;
 					 
-					#if  defined(_LCD_NOKIA_) || defined (_OLED_)
+					#if  defined(_LCD_NOKIA_) || defined (_SDISK_OLED_)
 					  lcd_contrast = config->lcd_contrast;
 					  if(lcd_contrast > MAX_CONTRAST) lcd_contrast = MAX_CONTRAST;
 					  if(lcd_contrast < MIN_CONTRAST) lcd_contrast = MIN_CONTRAST;
 					  #ifdef _LCD_NOKIA_
 					    lcd_config();	
 					  #endif
-					  #ifdef _OLED_
+					  #ifdef _SDISK_OLED_
 					    ssd1306_contrast(lcd_contrast);
 					  #endif	
 					  SD_select_card();		
@@ -1385,7 +1396,7 @@ unsigned int mount_nic_image(int file_id, struct dir_Structure* file)
 		for(int i = 0;i<8;i++)  if(file->name[i]!=' ') lcd_char(file->name[i]);
 	#endif
 	
-	#ifdef _OLED_
+	#ifdef _SDISK_OLED_
 		lcd_clear();
 		lcd_gotoxy(0,0);
 		lcd_underline();
